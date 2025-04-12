@@ -22,7 +22,8 @@ public class UserEventJournal {
     private String username;
 
     @Column(nullable = false)
-    private Event eventType; // CREATE, UPDATE, DELETE, READ etc.
+    @Enumerated(EnumType.STRING)
+    private Event eventType;
 
     @Column(nullable = false)
     private Instant timestamp;
