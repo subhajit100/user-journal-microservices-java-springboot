@@ -1,6 +1,6 @@
 package com.subhajit.microservices.journal_service.controller;
 
-import com.subhajit.microservices.journal_service.dto.UserEventJournalRequestDTO;
+
 import com.subhajit.microservices.journal_service.model.UserEventJournal;
 import com.subhajit.microservices.journal_service.service.UserEventJournalService;
 import lombok.RequiredArgsConstructor;
@@ -26,11 +26,5 @@ public class UserEventJournalController {
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<UserEventJournal>> getJournalsByUserId(@PathVariable Long userId) {
         return ResponseEntity.ok(journalService.getJournalsByUserId(userId));
-    }
-
-    //TODO:- API to be called by Kafka consumer only (internal use)
-    @PostMapping
-    public ResponseEntity<UserEventJournal> createJournalEntry(@RequestBody UserEventJournalRequestDTO dto) {
-        return ResponseEntity.ok(journalService.createJournalEntry(dto));
     }
 }

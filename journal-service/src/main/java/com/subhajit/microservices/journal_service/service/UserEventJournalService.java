@@ -1,6 +1,6 @@
 package com.subhajit.microservices.journal_service.service;
 
-import com.subhajit.microservices.journal_service.dto.UserEventJournalRequestDTO;
+import com.subhajit.microservices.journal_service.dto.UserEventDTO;
 import com.subhajit.microservices.journal_service.model.UserEventJournal;
 import com.subhajit.microservices.journal_service.repository.UserEventJournalRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ public class UserEventJournalService {
         return journalRepository.findByUserId(userId);
     }
 
-    public UserEventJournal createJournalEntry(UserEventJournalRequestDTO dto) {
+    public void createJournalEntry(UserEventDTO dto) {
         UserEventJournal journal = UserEventJournal.builder()
                 .userId(dto.getUserId())
                 .username(dto.getUsername())
@@ -32,6 +32,6 @@ public class UserEventJournalService {
                 .timestamp(Instant.now()) // Automatically use current UTC time
                 .build();
 
-        return journalRepository.save(journal);
+        journalRepository.save(journal);
     }
 }

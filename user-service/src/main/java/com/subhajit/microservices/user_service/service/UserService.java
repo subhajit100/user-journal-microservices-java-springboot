@@ -1,8 +1,10 @@
 package com.subhajit.microservices.user_service.service;
 
+import com.subhajit.microservices.user_service.dto.UserEventDTO;
 import com.subhajit.microservices.user_service.dto.UserRequestDTO;
 import com.subhajit.microservices.user_service.dto.UserResponseDTO;
 import com.subhajit.microservices.user_service.dto.UserUpdateRequestDTO;
+import com.subhajit.microservices.user_service.model.Event;
 import com.subhajit.microservices.user_service.model.User;
 import com.subhajit.microservices.user_service.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,8 @@ public class UserService {
 
     private final UserRepository userRepository;
 
+    private final UserEventProducer producer;
+
     public UserResponseDTO createUser(UserRequestDTO dto) {
         User user = User.builder()
                 .username(dto.getUsername())
@@ -28,6 +32,16 @@ public class UserService {
                 .build();
 
         user = userRepository.save(user);
+
+        // creating the event to be sent to journal service
+        UserEventDTO event = UserEventDTO.builder()
+                .userId(user.getId())
+                .username(user.getUsername())
+                .eventType(Event.CREATE)
+                .payload("Created a new User with Role: " + user.getRole().name()) // serialize payload
+                .build();
+
+        producer.sendUserEvent(event);
         return toDTO(user);
     }
 
@@ -57,14 +71,35 @@ public class UserService {
             user.setLastName(dto.getLastName());
         }
 
-        return toDTO(userRepository.save(user));
+        user = userRepository.save(user);
+
+        // creating the event to be sent to journal service
+        UserEventDTO event = UserEventDTO.builder()
+                .userId(user.getId())
+                .username(user.getUsername())
+                .eventType(Event.UPDATE)
+                .payload("Updated a User with Role: " + user.getRole().name())
+                .build();
+
+        producer.sendUserEvent(event);
+        return toDTO(user);
     }
 
     public void deleteUser(Long id) {
-        if (!userRepository.existsById(id)) {
-            throw new RuntimeException("User not found");
-        }
-        userRepository.deleteById(id);
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        userRepository.delete(user);
+
+        // creating the event to be sent to journal service
+        UserEventDTO event = UserEventDTO.builder()
+                .userId(user.getId())
+                .username(user.getUsername())
+                .eventType(Event.DELETE)
+                .payload("Deleting a User with Role: " + user.getRole().name())
+                .build();
+
+        producer.sendUserEvent(event);
     }
 
     private UserResponseDTO toDTO(User user) {
