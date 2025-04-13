@@ -11,5 +11,5 @@ public class UserEventDTO {
     private Long userId;
     private String username;
     private Event eventType;
-    private String payload; // you can send JSON String here
+    private String payload;
 }

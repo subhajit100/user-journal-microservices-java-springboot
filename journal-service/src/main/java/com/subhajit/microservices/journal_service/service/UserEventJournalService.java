@@ -29,7 +29,7 @@ public class UserEventJournalService {
                 .username(dto.getUsername())
                 .eventType(dto.getEventType())
                 .payload(dto.getPayload())
-                .timestamp(Instant.now()) // Automatically use current UTC time
+                .timestamp(Instant.now())
                 .build();
 
         journalRepository.save(journal);

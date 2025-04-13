@@ -38,7 +38,7 @@ public class UserService {
                 .userId(user.getId())
                 .username(user.getUsername())
                 .eventType(Event.CREATE)
-                .payload("Created a new User with Role: " + user.getRole().name()) // serialize payload
+                .payload("Created a User with id: " + user.getId() + ", username: " + user.getUsername())
                 .build();
 
         producer.sendUserEvent(event);
@@ -78,7 +78,7 @@ public class UserService {
                 .userId(user.getId())
                 .username(user.getUsername())
                 .eventType(Event.UPDATE)
-                .payload("Updated a User with Role: " + user.getRole().name())
+                .payload("Updated a User with id: " + user.getId() + ", username: " + user.getUsername())
                 .build();
 
         producer.sendUserEvent(event);
@@ -96,7 +96,7 @@ public class UserService {
                 .userId(user.getId())
                 .username(user.getUsername())
                 .eventType(Event.DELETE)
-                .payload("Deleting a User with Role: " + user.getRole().name())
+                .payload("Deleted a User with id: " + user.getId() + ", username: " + user.getUsername())
                 .build();
 
         producer.sendUserEvent(event);
