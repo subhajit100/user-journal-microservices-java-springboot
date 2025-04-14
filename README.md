@@ -15,6 +15,15 @@ This project is a **User Event Journal System** that helps to do CRUD operations
 
 To ensure security, **JWT authentication with Spring Security** is implemented for protected routes, maintaining data privacy and controlled access. 
 
+### Components used
+- zookeeper  (taken as a docker image)
+- kafka  (taken as a docker image)
+- Spring cloud api gateway
+- User microservice
+- Journal microservice
+- Eureka naming server
+- H2 in-memory database
+
 ### API Endpoints and Role Permissions
 
 **Note:- The base url will be :- http://localhost:8765**
