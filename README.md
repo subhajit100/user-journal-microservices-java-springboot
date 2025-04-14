@@ -214,3 +214,7 @@ GET    http://localhost:8765/api/journals/user/2
 docker-compose down
 ```
 
+### PS
+- If some api doesn't work, check if that user has the authority to access that API or not (based on ADMIN/USER role). 
+- Also see if you are using the correct user id in path of the url, may be you have deleted that in previous call?
+
