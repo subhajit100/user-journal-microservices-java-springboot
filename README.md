@@ -49,11 +49,11 @@ Note:- I assume you have Docker installed in your system. If not please do that 
 https://github.com/subhajit100/user-journal-microservices-java-springboot
 ```
 
-### Find the docker.compose.yml file
+### Find the docker-compose.yml file
 
 - The file will be present at the root of the github project. 
 - Copy that file into your local with same name. 
-- Open the terminal or Command Prompt (based on your OS) in the same directory where your docker.compose.yml file is present.
+- Open the terminal or Command Prompt (based on your OS) in the same directory where your docker-compose.yml file is present.
 
 ### Run the below command
 
@@ -207,4 +207,10 @@ Sample Request Body:-
 GET    http://localhost:8765/api/journals/user/2    
 ```
 
+### Stop all docker containers
+- Press ``` CTRL + C ``` to stop all docker containers. 
+- Ideal way:- Open a new terminal in the same directory of docker-compose.yml file, and run the below command:-
+```
+docker-compose down
+```
 
