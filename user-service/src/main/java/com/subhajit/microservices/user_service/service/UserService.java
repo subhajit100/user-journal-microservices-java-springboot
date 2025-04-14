@@ -1,13 +1,17 @@
 package com.subhajit.microservices.user_service.service;
 
-import com.subhajit.microservices.user_service.dto.UserEventDTO;
-import com.subhajit.microservices.user_service.dto.UserRequestDTO;
-import com.subhajit.microservices.user_service.dto.UserResponseDTO;
-import com.subhajit.microservices.user_service.dto.UserUpdateRequestDTO;
+import com.subhajit.microservices.user_service.dto.*;
 import com.subhajit.microservices.user_service.model.Event;
 import com.subhajit.microservices.user_service.model.User;
 import com.subhajit.microservices.user_service.repository.UserRepository;
+import com.subhajit.microservices.user_service.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,13 +22,20 @@ import java.util.Objects;
 public class UserService {
 
     private final UserRepository userRepository;
-
+    private final PasswordEncoder passwordEncoder;
     private final UserEventProducer producer;
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtil jwtUtil;
 
-    public UserResponseDTO createUser(UserRequestDTO dto) {
+    public UserResponseDTO registerUser(UserRequestDTO dto) {
+        // check if user already exists
+        if(userRepository.existsByUsername(dto.getUsername())){
+            throw new RuntimeException("User already exists");
+        }
+
         User user = User.builder()
                 .username(dto.getUsername())
-                .password(dto.getPassword()) // hash it while adding jwt auth
+                .password(passwordEncoder.encode(dto.getPassword())) // hash it
                 .email(dto.getEmail())
                 .firstName(dto.getFirstName())
                 .lastName(dto.getLastName())
@@ -43,6 +54,22 @@ public class UserService {
 
         producer.sendUserEvent(event);
         return toDTO(user);
+    }
+
+    public String loginUser(AuthenticationCredentialsRequestDTO authCredentialsRequestDTO) {
+        try {
+            Authentication authenticate = authenticationManager
+                    .authenticate(
+                            new UsernamePasswordAuthenticationToken(
+                                    authCredentialsRequestDTO.getUsername(), authCredentialsRequestDTO.getPassword()));
+
+            // this will call the loadUserByUsername method from UserServiceDetailsImpl class, and get the userDetails from the db with help of username
+            User user = (User) authenticate.getPrincipal();
+            user.setPassword(null);
+            return jwtUtil.generateToken(user);
+        } catch (BadCredentialsException e) {
+            throw new RuntimeException("Invalid credentials");
+        }
     }
 
     public UserResponseDTO getUserById(Long id) {

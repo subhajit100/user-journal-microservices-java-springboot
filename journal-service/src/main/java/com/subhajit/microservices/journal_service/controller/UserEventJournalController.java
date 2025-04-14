@@ -16,13 +16,11 @@ public class UserEventJournalController {
 
     private final UserEventJournalService journalService;
 
-    // TODO:- make it available to only ADMIN after adding spring security
     @GetMapping
     public ResponseEntity<List<UserEventJournal>> getAllJournals() {
         return ResponseEntity.ok(journalService.getAllJournals());
     }
 
-    // TODO:- make it available to both ADMIN and USER after adding spring security
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<UserEventJournal>> getJournalsByUserId(@PathVariable Long userId) {
         return ResponseEntity.ok(journalService.getJournalsByUserId(userId));
